@@ -4,12 +4,17 @@ agollib: A library of routines for working with ArcGIS REST API.
   REQUIRES: Requests library that is used to manage HTTP requests
   USES:     getpass, hashlib, socket, sys, and time standard libraries
 
+
+Author:        mbl - mbl@umn.edu: Mark Lindberg
+Contributers:
+
+Notes:
+
 """
 import getpass, socket, sys, time, requests, hashlib  #, json
 import Local
 
 VERBOSE = True
-
 
 class SubscriptionProperties:
   """Information about organization resources. Must be administrator to obtain."""
@@ -48,7 +53,8 @@ class SubscriptionProperties:
     return self.resourceList
   
   def getUsers(self, token):
-    """ holder """
+    """Returns a list of all user dictionaries reported by portal/users; A list of usernames
+    is kept in userList."""
     def getParams(i):
       """ holder """
       return {'token': token, 'start': str(i), 'num': '100'}
@@ -80,10 +86,10 @@ class SubscriptionProperties:
         groupDict[g[u'id']] = (g[u'title'], g[u'owner'])
     for i in groupDict.keys():
       self.groupList.append(i)
-    return(groupDict)
+    return groupDict
 
   def getItems(self, token):
-    """Get list of all item IDs."""
+    """Returns a dictionary of item data with item IDs as keys."""
     itemDict = {}
     if len(self.userList) < 1:
       self.getUsers(token)
@@ -134,7 +140,7 @@ class SubscriptionProperties:
     return results[u'currentVersion']
 
   def expirationDate(self):
-    """ holder """
+    """Returns formatted expiration date."""
     key = u'expDate'
     subInfo = self.subscriptionInfo()
     checkKey(key, subInfo)
@@ -163,8 +169,8 @@ class SubscriptionProperties:
 
 
   def dumpAll(self):
-    """ holder """
-    for i in self.getSortedKeys():
+    """Used for testing; to be removed."""
+    for i in sorted(self.results.keys()):
       if type(self.results[i])=='dict':
         for j in sorted(self.results[i].keys()):
           print "     ", i, j, type(self.results[i][j]), self.results[i][j]
@@ -175,10 +181,8 @@ class SubscriptionProperties:
         print i, type(self.results[i]), self.results[i]
     return
   
-  def getSortedKeys(self):
-    """ holder """
-    return sorted(self.results.keys())
-  
+# ================================ end of class =========================================
+
 def checkKey(key, dictionary):
   """Determines if key (k) is found in dictionary (r); stops script if not found."""
   if key not in dictionary:
@@ -233,7 +237,7 @@ def timeStr(timeObject):
   return time.strftime(dateTimeFmtStr, timeObject)
 
 def getDateTime(esriTimeObject):
-  """ holder """
+  """Use for decoding date-times reported by Esri."""
   return timeStr(decodeMillisecondTime(esriTimeObject))
 
 def getToken():
@@ -258,7 +262,6 @@ def getToken():
     userName = Local.USER
     passWord = Local.PASS
 
-
   pw = hashlib.md5()
   pw.update(passWord)
   if pw.hexdigest() != Local.MD5HASH:
@@ -282,28 +285,6 @@ if __name__ == "__main__":
   (TOKEN, EXPIRETIME) = getToken()
   x = SubscriptionProperties(TOKEN)
   print x.agolVersion
-#  g = x.getGroups(TOKEN)
-#  print g
-  items = x.getItems(TOKEN)
-#  print TOKEN
+  print TOKEN
  
-#  print getCurrentVersion()
- 
-#  print getAvailableCredits(TOKEN) 
-#  print getSubscriptionInfo(TOKEN)
   
-#  print getSpace(TOKEN)
-#  print a
-#  print type(b)
-#  print b
-#  print getUserList(TOKEN)
-#  print getItemList(TOKEN)
-#  print getGroupLDict(TOKEN)
-#  print timeStr(decodeExpireTime(EXPIRETIME))
-#  ITEMS = getItemDict(TOKEN)
-#  for k in ITEMS.keys():
-#    print k, ITEMS[k][0], ITEMS[k][1], ITEMS[k][2]
-
-#print __portalPropertiesQueried__
-#x = getPortalProperties(TOKEN)
-#print __portalPropertiesQueried__
