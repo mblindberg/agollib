@@ -9,6 +9,8 @@ OUTNAME = "users.csv"
 def getRatio(a, b, precision=7, percent=False):
   """Returns ratio of two numbers (longs) as a formatted string; caller may specify precision
   and if result should be a percentage."""
+  if b == 0:                 # kluge: must fix
+    b = float(0.00001)
   result = float(a) / float(b) * 100 if percent else float(a) / float(b)
   fmt = "{:0."+str(precision)+"f}"
   return fmt.format(result)
